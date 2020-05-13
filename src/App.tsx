@@ -1,43 +1,34 @@
-import React, {forwardRef, Fragment, useCallback, useEffect} from 'react';
-import {FunctionComponent, useRef} from 'react';
+import React, {Suspense, lazy} from 'react';
+import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import {FunctionComponent} from 'react';
 import {observer} from 'mobx-react-lite';
 import styled from 'styled-components';
-import http from './service/http';
-import {array} from './store/test';
 
 interface AppProps {
   className: string;
 }
 
-interface ButtonProps {
-  className: string;
-  color: string;
-  onRequest: () => void
-}
+const Home = lazy(() => import('./pages/Home/Home'));
+const Player = lazy(() => import('./pages/Player/Player'));
+const PageNotFound = lazy(() => import('./pages/404/404'));
 
-const Button: FunctionComponent<ButtonProps> = ({color}) => <button>{color}</button>;
-const StyledButton = styled(Button)`
-  background-color: blue;
-`;
 const App: FunctionComponent<AppProps> = (props) => {
-  const request = useCallback(() => {
-    http.post('/dj/program?rid=336355127').then((res) => {
-      console.log('res', res);
-    });
-  }, []);
-  const buttonRef = useRef(null);
-  useEffect(() => {
-    console.log(buttonRef);
-  }, []);
-  return <Fragment>
-    {array.map((number, index) => <span key={index}>{number}</span>)}
-    <StyledButton className={'button'} color={'red'}
-                  onRequest={request}>发送请求</StyledButton>
-  </Fragment>;
+  return (
+    <Suspense fallback={<div>loading</div>}>
+      <BrowserRouter>
+        <Switch>
+          <Route component={Home} path={['/home', '/']} exact={true}/>
+          <Route component={Player} path={['/player', '/p']} exact={true}/>
+          <Route component={PageNotFound} path={'*'}/>
+        </Switch>
+      </BrowserRouter>
+    </Suspense>
+  );
 };
 
 const styledApp = styled(observer(App))`
-color: antiquewhite;
+  color: antiquewhite;
+  background-color: beige;
 `;
 
 export default styledApp;

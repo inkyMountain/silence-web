@@ -6,8 +6,8 @@ import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App className={'App'} />
-    <GlobalStyle />
+    <App className={'App'}/>
+    <GlobalStyle/>
   </React.StrictMode>,
   document.getElementById('root')
 );
