@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useCallback} from 'react';
+import {FunctionComponent} from 'react';
+import styled from 'styled-components';
+import http from './service/http';
+import './reset.less';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface AppProps {
+  className: string;
 }
 
-export default App;
+const StyledButton = styled.button`
+  color: #8ad98a;
+`;
+
+const App: FunctionComponent<AppProps> = (props) => {
+  const {className} = props;
+  const request = useCallback(() => {
+    http.post('/dj/program?rid=336355127').then((res) => {
+      console.log('res', res);
+    });
+  }, []);
+  return (
+    <div className={className}>
+      Hello React
+      <StyledButton onClick={request}>Styled Button</StyledButton>
+    </div>
+  );
+};
+
+const styledApp = styled(App)`
+  background-color: aquamarine;
+  color: blue;
+`;
+
+export default styledApp;
