@@ -3,7 +3,7 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import {FunctionComponent} from 'react';
 import {observer} from 'mobx-react-lite';
 import styled, {ThemeProvider} from 'styled-components';
-import {globalTheme} from '@/store/store';
+import globalTheme from '@/store/theme';
 
 interface AppProps {
   className: string;
@@ -20,7 +20,7 @@ const App: FunctionComponent<AppProps> = () => {
         <BrowserRouter>
           <Switch>
             <Route component={Home} path={['/home', '/']} exact={true}/>
-            <Route component={Player} path={['/player', '/p']} exact={true}/>
+            <Route component={Player} path={['/player']} exact={true}/>
             <Route component={PageNotFound} path={'*'}/>
           </Switch>
         </BrowserRouter>

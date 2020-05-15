@@ -37,4 +37,9 @@ button {
   // IOS下button padding大小不可调整，加上这个专治各种不服。
   -webkit-appearance: none;
 }
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none;
+}
 `;

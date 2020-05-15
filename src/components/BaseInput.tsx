@@ -15,13 +15,13 @@ const Input: FunctionComponent<InputProps> = (props) => {
 };
 
 const styledInput = styled(Input)`
-  background-color: ${props => props.theme.lightGray};
-  border-bottom: ${props => props.theme.deepGray} 2px solid;
   display: inline-flex;
   .base-input {
+    background-color: ${props => props.theme.lightGray};
+    border-bottom: ${props => props.theme.deepGray} 2px solid;
     max-width: 250px;
-    font-size: 30px;
-    line-height: 1em;
+    line-height: 30px;
+    margin-left: 10px;
   }
 `;
 
