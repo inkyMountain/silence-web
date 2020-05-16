@@ -125,6 +125,27 @@ interface User {
   isLogin: boolean;
 }
 
+interface Track {
+  al: {
+    id: number;
+    name: string;
+    pic: number;
+    picUrl: string;
+    pic_str: string;
+  }
+  alia: Array<string>;
+  ar: Array<{
+    id: number;
+    name: string;
+  }>
+  h: { br: number, fid: number, size: number, vd: number }
+  id: number;
+  l: { br: number, fid: number, size: number, vd: number }
+  m: { br: number, fid: number, size: number, vd: number }
+  name: string;
+  publishTime: number;
+}
+
 interface PlaylistDetail {
   playlist: {
     backgroundCoverUrl: string;
@@ -136,25 +157,24 @@ interface PlaylistDetail {
     playCount: number;
     tags: Array<string>;
     titleImageUrl: string;
-    tracks: Array<{
-      al: {
-        id: number;
-        name: string;
-        pic: number;
-        picUrl: string;
-        pic_str: string;
-      }
-      alia: Array<string>;
-      ar: Array<{
-        id: number;
-        name: string;
-      }>
-      h: { br: number, fid: number, size: number, vd: number }
-      id: number;
-      l: { br: number, fid: number, size: number, vd: number }
-      m: { br: number, fid: number, size: number, vd: number }
-      name: string;
-      publishTime: number;
-    }>
+    tracks: Array<Track>
   }
+}
+
+interface SongUrl {
+  br: number;
+  canExtend: boolean;
+  code: number;
+  encodeType: string;
+  fee: number;
+  flag: number;
+  freeTrialInfo: null
+  gain: number;
+  id: number;
+  level: string;
+  md5: string;
+  size: number;
+  // 如 mp3
+  type: string;
+  url: string;
 }

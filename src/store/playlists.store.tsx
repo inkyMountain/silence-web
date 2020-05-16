@@ -24,6 +24,15 @@ class PlaylistStore {
   setPlaylistDetail(playlistDetail: PlaylistDetail) {
     this.playlistDetail = playlistDetail;
   }
+
+
+  @observable
+  track: Partial<Track> = {};
+
+  @action
+  setTrack(track: Track) {
+    this.track = track;
+  }
 }
 
 export default new PlaylistStore();
