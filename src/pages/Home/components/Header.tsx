@@ -3,26 +3,23 @@ import React, {
   ChangeEvent,
   FunctionComponent,
   useCallback,
-  useEffect,
   useState
 } from 'react';
 import styled from 'styled-components';
-import BaseInput from '@/components/BaseInput';
-import * as interfaces from '@/service/interfaces';
-import user from '@/store/user';
+import classnames from 'classnames';
+
 import {cache} from '@/utils';
+import * as interfaces from '@/service/interfaces';
+import userStore from '@/store/user.store';
+import BaseInput from '@/components/BaseInput';
+import BaseButton from '@/components/BaseButton';
 
 interface HeaderProps {
   className: string;
 }
 
-const recoverUser = () => {
-  const cachedUser = cache.get('user');
-  if (!cachedUser.account || !cachedUser.profile) return;
-  user.account = cachedUser.account;
-  user.profile = cachedUser.profile;
-  console.log('cachedUser', cachedUser);
-  console.log('user111', user);
+const persistUser = (user: { account: Object, profile: Object }) => {
+  cache.set('user', user);
 };
 
 const Header: FunctionComponent<HeaderProps> = observer(({className}) => {
@@ -33,38 +30,45 @@ const Header: FunctionComponent<HeaderProps> = observer(({className}) => {
   const onPasswordChange = useCallback((event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value), []);
 
   const login = useCallback(() => {
-    interfaces.loginViaPhone({phone, password}).then(({data}) => {
+    interfaces.loginViaPhone({phone, password}).then((data) => {
       console.log('data', data);
-      user.account = data.account;
-      user.profile = data.profile;
-      cache.set('user', data);
+      userStore.updateAccount(data.account);
+      userStore.updateProfile(data.profile);
+      persistUser(data);
     });
   }, [phone, password]);
 
   const logUser = useCallback(() => {
-    console.log('user.account', user.account);
-    console.log('user.profile', user.profile);
+    console.log('user.account', userStore.account);
+    console.log('user.profile', userStore.profile);
   }, []);
 
-  useEffect(() => {
-    recoverUser();
-  }, []);
-
-  return (
-    <div className={className}>
+  const LoginComponent = (
+    <div className={'login'}>
       <BaseInput type="text" label={'手机号'} onChange={onEmailChange} value={phone}
                  className={'email'}/>
       <BaseInput type="text" label={'密码'} onChange={onPasswordChange} value={password}
                  className={'password'}/>
-      <button className="login" onClick={login}>登录</button>
-      <button className="login" onClick={logUser}>显示用户信息</button>
+      <BaseButton className="login" onClick={login}>登录</BaseButton>
+      <BaseButton className="login" onClick={logUser}>显示用户信息</BaseButton>
+    </div>
+  );
+  const WelcomeComponent = <div
+    className="welcome">你好，{userStore.profile.nickname}。</div>;
+  return (
+    <div className={classnames('explorer-header', className)}>
+      {userStore.isLogin ? WelcomeComponent : LoginComponent}
     </div>
   );
 });
 
 const styledHeader = styled(Header)`
-  background-color: cornflowerblue;
+  display: flex;
+  margin-left: auto;
   padding: 20px;
+  .login, .welcome {
+    margin-left: auto;
+  }
 `;
 
 

@@ -18,6 +18,12 @@ const Explorer: FunctionComponent<ExplorerProps> = observer(({className}) => {
 });
 
 const styledExplorer = styled(Explorer)`
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  .explore-main {
+    flex: 1;
+  }
 `;
 
 

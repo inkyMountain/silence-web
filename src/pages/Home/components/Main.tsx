@@ -1,8 +1,11 @@
 import {observer} from 'mobx-react-lite';
-import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
+import React, {FunctionComponent, useEffect} from 'react';
 import styled from 'styled-components';
+import {reaction} from 'mobx';
+
 import * as interfaces from '@/service/interfaces';
-import user from '@/store/user';
+import playlistStore from '@/store/playlists.store';
+import {Simulate} from 'react-dom/test-utils';
 
 interface MainProps {
   className: string;
@@ -10,27 +13,30 @@ interface MainProps {
 
 const Main: FunctionComponent<MainProps> = observer(({className}) => {
   useEffect(() => {
-    console.log('isLogin', user.isLogin);
+    reaction(
+      () => playlistStore.selectedPlaylist.id,
+      () => {
+        const playlistId = playlistStore.selectedPlaylist.id as number;
+        interfaces.fetchPlaylistDetail(playlistId).then((playlistDetail) => {
+          playlistStore.setPlaylistDetail(playlistDetail);
+          console.log('歌单详情加载成功', playlistDetail);
+        });
+      }
+    );
   }, []);
 
-  const fetchPlaylist = useCallback(() => {
-    console.log('获取用户歌单');
-    const userId = user.account.id as number;
-    console.log('userId', userId);
-    // if (!userId) return;
-    interfaces.fetchPlaylist(userId).then(({data}) => {
-      console.log(data);
-    });
-  }, []);
   return (
     <div className={className}>
-      <button onClick={fetchPlaylist}>获取歌单</button>
+      {playlistStore.playlistDetail.playlist?.tracks.map(song => {
+        return (
+          <div className="song" key={song.id}>{song.name}</div>
+        );
+      })}
     </div>
   );
 });
 
 const styledMain = styled(Main)`
-  
 `;
 
 
