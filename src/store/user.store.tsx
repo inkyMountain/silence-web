@@ -10,7 +10,7 @@ class UserStore {
 
   @computed
   get isLogin() {
-    return !!(this.account && this.profile);
+    return Object.keys(this.account).length > 0 && Object.keys(this.profile).length > 0;
   }
 
   @action
