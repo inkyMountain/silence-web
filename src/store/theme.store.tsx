@@ -1,8 +1,10 @@
 import {action, observable} from 'mobx';
 
 interface GlobalTheme {
-  deepGray: string;
-  lightGray: string;
+  deepestGray: string;
+  deeperGray: string;
+  lighterGray: string;
+  lightestGray: string;
 }
 
 type ValueOf<T> = T[keyof T]
@@ -10,8 +12,10 @@ type ValueOf<T> = T[keyof T]
 class GlobalThemeStore {
   @observable
   globalTheme: GlobalTheme = {
-    deepGray: '#666',
-    lightGray: '#f2f2f2'
+    deepestGray: '#2f2f2f',
+    deeperGray: '#666666',
+    lighterGray: '#d7d7d7',
+    lightestGray: '#f2f2f2'
   };
 
   @action

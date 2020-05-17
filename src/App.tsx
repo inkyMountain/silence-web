@@ -1,21 +1,14 @@
-import React, {Suspense, lazy, useEffect} from 'react';
+import React, {Suspense, lazy} from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import {FunctionComponent} from 'react';
 import {observer} from 'mobx-react-lite';
 import {configure, reaction} from 'mobx';
-import {Howl} from 'howler';
 
 import styled, {ThemeProvider} from 'styled-components';
 import playlistStore from '@/store/playlists.store';
-import globalTheme from '@/store/theme.store';
+import globalThemeStore from '@/store/theme.store';
 import * as interfaces from '@/service/interfaces';
-
-const playMusic = (src: string) => {
-  new Howl({
-    src,
-    autoplay: true
-  });
-};
+import {Howl} from 'howler';
 
 interface AppProps {
   className: string;
@@ -27,20 +20,46 @@ const Home = lazy(() => import('./pages/Home/Home'));
 const Player = lazy(() => import('./pages/Player/Player'));
 const PageNotFound = lazy(() => import('./pages/404/404'));
 
-const App: FunctionComponent<AppProps> = () => {
-  useEffect(() => {
-    reaction(
-      () => playlistStore.track.id,
-      async (trackId) => {
-        const res = await interfaces.fetchSongUrl(trackId as number);
-        const targetSong = res.data.find((song) => song.id === trackId) as SongUrl;
-        playMusic(targetSong.url);
-      },
-    );
-  }, []);
+const playMusic = (song: Song) => {
+  const oldHowler = playlistStore.howler;
+  oldHowler && oldHowler.unload();
+  const howler = new Howl({
+    src: song.url,
+    autoplay: true
+  });
+  playlistStore.setHowler(howler);
+  howler.once('end', () => {
+    howler.unload();
+    const tracks = playlistStore.playlistDetailInUse.playlist?.tracks as Array<Track>;
+    const currentTrackIndex = tracks.findIndex(
+      (track) => track.id === song.id);
+    const nextTrackIndex = currentTrackIndex === (tracks.length - 1) ? 0 : currentTrackIndex + 1;
+    const nextTrack = tracks[nextTrackIndex];
+    playlistStore.setTrack(nextTrack);
+  });
+};
 
+// 改变track变量时，播放trackId对应的音乐。
+reaction(
+  () => playlistStore.track.id,
+  async (trackId) => {
+    const localTargetSong = playlistStore.songsInUse.find(
+      (song) => song.id === trackId);
+    if (localTargetSong && localTargetSong.url) {
+      playMusic(localTargetSong);
+      return;
+    }
+    const res = await interfaces.fetchSongs(trackId as number);
+    const targetSong = res.data.find((song) => song.id === trackId);
+    if (targetSong && targetSong.url) {
+      playMusic(targetSong);
+    }
+  },
+);
+
+const App: FunctionComponent<AppProps> = () => {
   return (
-    <ThemeProvider theme={globalTheme}>
+    <ThemeProvider theme={globalThemeStore.globalTheme}>
       <Suspense fallback={<div>loading</div>}>
         <BrowserRouter>
           <Switch>

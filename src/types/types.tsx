@@ -161,7 +161,7 @@ interface PlaylistDetail {
   }
 }
 
-interface SongUrl {
+interface Song {
   br: number;
   canExtend: boolean;
   code: number;

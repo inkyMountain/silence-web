@@ -63,6 +63,9 @@ const Header: FunctionComponent<HeaderProps> = observer(({className}) => {
 });
 
 const styledHeader = styled(Header)`
+  position: fixed;
+  right: 0;
+  top: 0;
   display: flex;
   margin-left: auto;
   padding: 20px;

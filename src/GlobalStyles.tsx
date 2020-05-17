@@ -25,7 +25,7 @@ ol,
 ul {
   list-style: none;
 }
-
+  
 html,
 body,
 #app,
