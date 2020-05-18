@@ -1,7 +1,7 @@
 import React, {FunctionComponent, InputHTMLAttributes} from 'react';
 import styled from 'styled-components';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputHTMLAttributes<HTMLDivElement> {
   label?: string;
 }
 

@@ -29,28 +29,24 @@ const Header: FunctionComponent<HeaderProps> = observer(({className}) => {
   const onEmailChange = useCallback((event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value), []);
   const onPasswordChange = useCallback((event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value), []);
 
-  const login = useCallback(() => {
-    interfaces.loginViaPhone({phone, password}).then((data) => {
-      console.log('data', data);
-      userStore.updateAccount(data.account);
-      userStore.updateProfile(data.profile);
-      persistUser(data);
-    });
+  const login = useCallback(async () => {
+    const user = await interfaces.loginViaPhone({phone, password});
+    userStore.updateAccount(user.account);
+    userStore.updateProfile(user.profile);
+    persistUser(user);
   }, [phone, password]);
 
-  const logUser = useCallback(() => {
-    console.log('user.account', userStore.account);
-    console.log('user.profile', userStore.profile);
-  }, []);
+  const onKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key.toLowerCase() === 'enter') login();
+  }, [login]);
 
   const LoginComponent = (
     <div className={'login'}>
       <BaseInput type="text" label={'手机号'} onChange={onEmailChange} value={phone}
-                 className={'email'}/>
-      <BaseInput type="text" label={'密码'} onChange={onPasswordChange} value={password}
-                 className={'password'}/>
+                 className={'email'} onKeyDown={onKeyDown}/>
+      <BaseInput type="password" label={'密码'} onChange={onPasswordChange} value={password}
+                 className={'password'} onKeyDown={onKeyDown}/>
       <BaseButton className="login" onClick={login}>登录</BaseButton>
-      <BaseButton className="login" onClick={logUser}>显示用户信息</BaseButton>
     </div>
   );
   const WelcomeComponent = <div

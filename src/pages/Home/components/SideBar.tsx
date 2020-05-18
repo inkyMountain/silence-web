@@ -4,27 +4,33 @@ import styled from 'styled-components';
 import classNames from 'classnames';
 
 import playlistsStore from '@/store/playlists.store';
-import userSotre from '@/store/user.store';
+import userStore from '@/store/user.store';
 import * as interfaces from '@/service/interfaces';
 import {cache} from '@/utils';
+import {reaction} from 'mobx';
 
 interface SideBarProps {
   className: string;
 }
 
-const SideBar: FunctionComponent<SideBarProps> = observer(({className}) => {
-  useEffect(() => {
-    const cachedUser = cache.get('user') || {};
-    userSotre.updateAccount(cachedUser.account || {});
-    userSotre.updateProfile(cachedUser.profile || {});
-  }, []);
-
-  useEffect(() => {
-    const userId = userSotre.account.id as number;
+// 当用户登录时，获取用户歌单。
+reaction(
+  () => userStore.isLogin,
+  (isLogin) => {
+    if (!isLogin) return;
+    const userId = userStore.account.id as number;
     interfaces.fetchPlaylists(userId).then(({playlist: playlists}) => {
       playlistsStore.setPlaylists(playlists);
       playlistsStore.setSelectedPlaylist(playlists[0] || []);
     });
+  }
+);
+
+const SideBar: FunctionComponent<SideBarProps> = observer(({className}) => {
+  useEffect(() => {
+    const cachedUser = cache.get('user') || {};
+    userStore.updateAccount(cachedUser.account || {});
+    userStore.updateProfile(cachedUser.profile || {});
   }, []);
 
   const changePlaylist = useCallback((list) => {

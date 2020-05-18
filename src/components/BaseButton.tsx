@@ -14,6 +14,7 @@ const BaseButton: FunctionComponent<ButtonProps> = (props) => {
 const styledInput = styled(BaseButton)`
   display: inline-flex;
   padding: 10px 20px;
+  cursor: pointer;
 `;
 
 
