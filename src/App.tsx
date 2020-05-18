@@ -3,12 +3,12 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import {FunctionComponent} from 'react';
 import {observer} from 'mobx-react-lite';
 import {configure, reaction} from 'mobx';
+import {Howl} from 'howler';
 
 import styled, {ThemeProvider} from 'styled-components';
 import playlistStore from '@/store/playlists.store';
 import globalThemeStore from '@/store/theme.store';
 import * as interfaces from '@/service/interfaces';
-import {Howl} from 'howler';
 
 interface AppProps {
   className: string;
@@ -24,19 +24,31 @@ const playMusic = (song: Song) => {
   const oldHowler = playlistStore.howler;
   oldHowler && oldHowler.unload();
   const howler = new Howl({
-    src: song.url,
-    autoplay: true
+    // src: `https://music.163.com/song/media/outer/url?id=${song.id}.mp3`,
+    // 如果song.url为null, 则用含一个空格的字符串代替, 否则howler.unload()方法会报错。
+    src: song.url || ' ',
+    autoplay: true,
+    html5: true
   });
-  playlistStore.setHowler(howler);
-  howler.once('end', () => {
+  const playNext = () => {
     howler.unload();
     const tracks = playlistStore.playlistDetailInUse.playlist?.tracks as Array<Track>;
     const currentTrackIndex = tracks.findIndex(
       (track) => track.id === song.id);
     const nextTrackIndex = currentTrackIndex === (tracks.length - 1) ? 0 : currentTrackIndex + 1;
     const nextTrack = tracks[nextTrackIndex];
+    // 改变track对象，触发reaction，从而播放下一首歌。
     playlistStore.setTrack(nextTrack);
+  };
+  // 歌单中有可能存在部分因为没有版权引起的song.url为空的歌。
+  if (song.url === null) playNext();
+  playlistStore.setHowler(howler);
+  howler.once('load', () => {
+    console.log('加载成功');
   });
+  howler.once('end', playNext);
+  howler.once('playerror', playNext);
+  howler.once('loaderror', playNext);
 };
 
 // 改变track变量时，播放trackId对应的音乐。
@@ -45,16 +57,17 @@ reaction(
   async (trackId) => {
     const localTargetSong = playlistStore.songsInUse.find(
       (song) => song.id === trackId);
-    if (localTargetSong && localTargetSong.url) {
+    if (localTargetSong) {
+      console.log('url from local');
       playMusic(localTargetSong);
       return;
     }
+    console.log('url from network');
     const res = await interfaces.fetchSongs(trackId as number);
     const targetSong = res.data.find((song) => song.id === trackId);
-    if (targetSong && targetSong.url) {
-      playMusic(targetSong);
-    }
+    playMusic(targetSong as Song);
   },
+  {name: '音频播放'}
 );
 
 const App: FunctionComponent<AppProps> = () => {

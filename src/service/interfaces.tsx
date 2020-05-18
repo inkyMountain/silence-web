@@ -24,6 +24,9 @@ export const fetchPlaylistDetail = async (id: number) => {
 
 export const fetchSongs = async (id: number | Array<number>) => {
   const ids = typeof id === 'number' ? [id] : id;
-  const res = await http.get<{ data: Array<Song> }>(`/song/url?id=${ids.join(',')}&bt=320000`);
+  const res = await http.get<{ data: Array<Song> }>(
+    `/song/url`,
+    {params: {id: ids.join(',')}}
+  );
   return res.data;
 };

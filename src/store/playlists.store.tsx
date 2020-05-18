@@ -61,7 +61,7 @@ class PlaylistStore {
 
   @action
   setSongsInUse(songs: Array<Song>) {
-    this.songs = songs;
+    this.songsInUse = songs;
   }
 
   @observable
