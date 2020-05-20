@@ -2,12 +2,13 @@ import {observer} from 'mobx-react-lite';
 import React, {FunctionComponent, useCallback, useEffect} from 'react';
 import styled from 'styled-components';
 import classNames from 'classnames';
+import {reaction} from 'mobx';
 
 import playlistsStore from '@/store/playlists.store';
 import userStore from '@/store/user.store';
 import * as interfaces from '@/service/interfaces';
 import {cache} from '@/utils';
-import {reaction} from 'mobx';
+import flagStore from '@/store/flags.store';
 
 interface SideBarProps {
   className: string;
@@ -21,7 +22,6 @@ reaction(
     const userId = userStore.account.id as number;
     interfaces.fetchPlaylists(userId).then(({playlist: playlists}) => {
       playlistsStore.setPlaylists(playlists);
-      playlistsStore.setSelectedPlaylist(playlists[0] || []);
     });
   }
 );
@@ -34,22 +34,34 @@ const SideBar: FunctionComponent<SideBarProps> = observer(({className}) => {
   }, []);
 
   const changePlaylist = useCallback((list) => {
+    flagStore.setCurrentTab('playlist');
     playlistsStore.setSelectedPlaylist(list);
   }, []);
 
+  const showRecommendLPlaylist = useCallback(() => {
+    flagStore.setCurrentTab('recommend');
+    console.log('showRecommendLPlaylist');
+  }, []);
+
+  const isRecommendSelected = flagStore.currentTab.get() === 'recommend';
+
   return (
-    <div className={classNames(className)}>{
-      playlistsStore.playlists.map(list => {
-        const isSelected = playlistsStore.playlistDetail.playlist?.id === list.id;
-        return (
-          <div className={classNames('playlist', isSelected ? 'selected' : '')}
-               key={list.id}
-               onClick={(() => changePlaylist(list))}>
-            {list.name}
-          </div>
-        );
-      })
-    }</div>
+    <div className={classNames(className)}>
+      <div
+        className={classNames('find-more', 'tile', isRecommendSelected ? 'selected' : '')}
+        onClick={showRecommendLPlaylist}>推荐
+      </div>
+      {playlistsStore.playlists.map(list => {
+          const isSelected = playlistsStore.playlistDetail.playlist?.id === list.id;
+          return (
+            <div className={classNames('tile', isSelected ? 'selected' : '')}
+                 key={list.id}
+                 onClick={(() => changePlaylist(list))}>
+              {list.name}
+            </div>
+          );
+        }
+      )}</div>
   );
 });
 
@@ -58,16 +70,16 @@ const styledSideBar = styled(SideBar)`
   min-width: 150px;
   max-width: 500px;
   border-right: ${props => props.theme.lightestGray} 1px solid;
-  .playlist {
+  .tile {
     padding: 10px;
     cursor: pointer;
     border-left: transparent 5px solid;
   }
-  .playlist:hover {
+  .tile:hover {
     transition: background-color ease .2s;
     background-color: ${props => props.theme.lightestGray};
   }
-  .playlist.selected {
+  .tile.selected {
     border-left: ${props => props.theme.deepestGray} 5px solid;
     background-color: ${props => props.theme.lightestGray};
   }

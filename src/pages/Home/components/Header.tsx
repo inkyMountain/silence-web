@@ -50,7 +50,7 @@ const Header: FunctionComponent<HeaderProps> = observer(({className}) => {
     </div>
   );
   const WelcomeComponent = <div
-    className="welcome">你好，{userStore.profile.nickname}。</div>;
+    className="welcome"/>;
   return (
     <div className={classnames('explorer-header', className)}>
       {userStore.isLogin ? WelcomeComponent : LoginComponent}

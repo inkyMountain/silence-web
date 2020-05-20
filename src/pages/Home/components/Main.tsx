@@ -5,6 +5,7 @@ import {reaction} from 'mobx';
 
 import * as interfaces from '@/service/interfaces';
 import playlistStore from '@/store/playlists.store';
+import flagStore from '@/store/flags.store';
 import classNames from 'classnames';
 
 interface MainProps {
@@ -26,6 +27,13 @@ reaction(
   }
 );
 
+reaction(
+  () => flagStore.currentTab.get() === 'recommend',
+  () => {
+    console.log('选中推荐tab');
+  }
+);
+
 const Main: FunctionComponent<MainProps> = observer(({className}) => {
   const changeTrack = useCallback((track: Track) => {
     playlistStore.setSongsInUse(playlistStore.songs);
@@ -33,23 +41,27 @@ const Main: FunctionComponent<MainProps> = observer(({className}) => {
     playlistStore.setTrack(track);
   }, []);
 
+  const playlistItems = (
+    <table className={'songlist-table'}>
+      <tbody>{
+        playlistStore.playlistDetail.playlist?.tracks.map(track => {
+          const isPlaying = track.id === playlistStore.track.id;
+          return (
+            <tr className={classNames('track', isPlaying ? 'playing' : '')}
+                key={track.id}
+                onClick={() => changeTrack(track)}>
+              <td className="name">{track.name}</td>
+              <td className="author">{track?.ar[0].name}</td>
+            </tr>
+          );
+        })
+      }</tbody>
+    </table>
+  );
+
   return (
     <div className={className}>
-      <table className={'songlist-table'}>
-        <tbody>{
-          playlistStore.playlistDetail.playlist?.tracks.map(track => {
-            const isPlaying = track.id === playlistStore.track.id;
-            return (
-              <tr className={classNames('track', isPlaying ? 'playing' : '')}
-                  key={track.id}
-                  onClick={() => changeTrack(track)}>
-                <td className="name">{track.name}</td>
-                <td className="author">{track?.ar[0].name}</td>
-              </tr>
-            );
-          })
-        }</tbody>
-      </table>
+      {flagStore.currentTab.get() === 'playlist' ? playlistItems : '推荐歌单'}
     </div>
   );
 });

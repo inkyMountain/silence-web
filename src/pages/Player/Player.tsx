@@ -15,7 +15,6 @@ const Player: FunctionComponent<PlayerProps> = observer(({className}) => {
 });
 
 const styledPlayer = styled(Player)`
-  color: cornflowerblue;
 `;
 
 
