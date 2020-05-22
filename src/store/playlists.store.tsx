@@ -1,4 +1,5 @@
 import {observable, action} from 'mobx';
+import AudioPlayer from '@/utils/AudioPlayer';
 
 class PlaylistStore {
   @observable
@@ -65,11 +66,11 @@ class PlaylistStore {
   }
 
   @observable
-  howler: Howl | undefined;
+  player: AudioPlayer | undefined;
 
   @action
-  setHowler(howler: Howl) {
-    this.howler = howler;
+  setPlayer(player: AudioPlayer) {
+    this.player = player;
   };
 }
 

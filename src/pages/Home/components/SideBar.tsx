@@ -52,7 +52,8 @@ const SideBar: FunctionComponent<SideBarProps> = observer(({className}) => {
         onClick={showRecommendLPlaylist}>推荐
       </div>
       {playlistsStore.playlists.map(list => {
-          const isSelected = playlistsStore.playlistDetail.playlist?.id === list.id;
+          const isSelected = playlistsStore.playlistDetail.playlist?.id === list.id
+                             && flagStore.currentTab.get() === 'playlist';
           return (
             <div className={classNames('tile', isSelected ? 'selected' : '')}
                  key={list.id}
