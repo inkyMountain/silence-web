@@ -1,4 +1,5 @@
 import {createGlobalStyle} from 'styled-components';
+import themeStore from '@/store/theme.store';
 
 export default createGlobalStyle`
 *,
@@ -10,7 +11,8 @@ export default createGlobalStyle`
   text-decoration: none;
   outline: none;
   border: none;
-  background: none;
+  color: ${themeStore.globalTheme.deepest};
+  background-color: ${themeStore.globalTheme.lightest};
 }
 
 a:link,
@@ -41,5 +43,9 @@ button {
 input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none;
+}
+
+#root {
+  background-color: ${themeStore.globalTheme.background};
 }
 `;

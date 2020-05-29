@@ -18,7 +18,7 @@ const styledInput = styled(Input)`
   display: inline-flex;
   .base-input {
     background-color: ${props => props.theme.lightGray};
-    border-bottom: ${props => props.theme.deepGray} 2px solid;
+    border-bottom: ${props => props.theme.deepGray} 1px solid;
     max-width: 250px;
     line-height: 30px;
     margin-left: 10px;

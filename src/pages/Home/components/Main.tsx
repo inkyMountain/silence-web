@@ -74,10 +74,14 @@ const styledMain = styled(Main)`
   }
   .track:hover {
     transition: background-color ease .2s;
-    background-color: ${props => props.theme.lightestGray};
+    background-color: ${props => props.theme.deepest};
   }
-  .track.playing {
-    background-color: ${props => props.theme.lighterGray};
+  .track.playing .name,
+  .track.playing .author,
+  .track:hover .name,
+  .track:hover .author {
+    background-color: ${props => props.theme.deepest};
+    color: ${props => props.theme.lighter};
   }
   .songlist-table {
     border-collapse: collapse;
